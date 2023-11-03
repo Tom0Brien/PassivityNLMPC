@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 data = np.loadtxt('nmpc_trajectory.dat', skiprows=1)
 
 # Unpack the data
-t, q1, q2, qd1, qd2, u1, u2 = data.T
+t, q1, q2, qd1, qd2, u1, u2, cost = data.T
 
 # Connect to PyBullet
 p.connect(p.GUI)

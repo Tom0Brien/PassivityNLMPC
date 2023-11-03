@@ -8,30 +8,8 @@
 int main() {
     using namespace tinyrobotics;
 
-    // Create a robot model with 5 joints
+    // Create a robot model with 2 joints
     auto model = import_urdf<double, 2>("../urdfs/2_link.urdf");
-
-    // Display details of model
-    model.show_details();
-
-    // Define the source and target links
-    const std::string source_link_name = "ground";
-    const std::string target_link_name = "link_2";
-
-    // Set some random joint configuration, velocity and torque
-    Eigen::Matrix<double, 2, 1> q = Eigen::Matrix<double, 2, 1>::Zero();
-    q << 1, 2;
-    Eigen::Matrix<double, 2, 1> qd = Eigen::Matrix<double, 2, 1>::Zero();
-    qd << 1, 2;
-    Eigen::Matrix<double, 2, 1> tau = Eigen::Matrix<double, 2, 1>::Zero();
-    tau << 1, 2;
-
-    // Compute forward kinematics
-    auto H = forward_kinematics(model, q, target_link_name);
-
-    // Compute the forward dynamics
-    auto qdd = forward_dynamics(model, q, qd, tau);
-    std::cout << "qdd: " << qdd.transpose() << std::endl;
 
     // Dimensions
     constexpr int num_states = 4;
@@ -114,14 +92,12 @@ int main() {
 
     auto r = optsolver.getLastResult();
 
-    // Open a file to save the data
     std::ofstream data_file("nmpc_trajectory.dat");
     if (!data_file.is_open()) {
         std::cerr << "Unable to open file for writing the trajectory." << std::endl;
         return -1;
     }
 
-    // Write the header for the data file
     data_file << "time q1 q2 qd1 qd2 u1 u2 cost\n";
     double time  = 0;
     double tspan = 20;
