@@ -63,28 +63,53 @@ int main() {
                                         const unsigned int&) { stateEq(dx, x, u); });
 
     // Define the objective function
-    optsolver.setObjectiveFunction([&](const mpc::mat<pred_hor + 1, num_states>& x,
-                                       const mpc::mat<pred_hor + 1, num_output>&,
-                                       const mpc::mat<pred_hor + 1, num_inputs>& u,
-                                       double) { return x.array().square().sum() + u.array().square().sum(); });
+    double K = 1;
+    Eigen::Matrix<double, num_states / 2, 1> q_d;
+    q_d << 1, 1;
+    optsolver.setObjectiveFunction([&](const Eigen::Matrix<double, pred_hor + 1, num_states>& x,
+                                       const Eigen::Matrix<double, pred_hor + 1, num_output>&,
+                                       const Eigen::Matrix<double, pred_hor + 1, num_inputs>& u,
+                                       double) {
+        double cost_val = 0;
+        for (int i = 0; i < pred_hor + 1; i++) {
+            // Extract the states
+            Eigen::Matrix<double, num_states / 2, 1> q  = x.row(i).head(2);
+            Eigen::Matrix<double, num_states / 2, 1> qd = x.row(i).tail(2);
 
-    // Define the constraints
-    optsolver.setIneqConFunction([&](mpc::cvec<ineq_c>& in_con,
-                                     const mpc::mat<pred_hor + 1, num_states>&,
-                                     const mpc::mat<pred_hor + 1, num_output>&,
-                                     const mpc::mat<pred_hor + 1, num_inputs>& u,
+            // Compute the mass matrix
+            Eigen::Matrix<double, num_states / 2, num_states / 2> M = mass_matrix(model, q);
+
+            // Define error
+            Eigen::Matrix<double, num_states / 2, 1> e_q = q - q_d;
+            Eigen::Matrix<double, 1, 1> cost             = 0.5 * (qd.transpose() * M * qd + e_q.transpose() * K * e_q);
+            cost_val += cost(0, 0);
+        }
+        return cost_val;
+    });
+
+    // Define the Passivity constraint
+    double rho = 0.1;
+    optsolver.setIneqConFunction([&](Eigen::Matrix<double, ineq_c, 1>& in_con,
+                                     const Eigen::Matrix<double, pred_hor + 1, num_states>& x,
+                                     const Eigen::Matrix<double, pred_hor + 1, num_output>&,
+                                     const Eigen::Matrix<double, pred_hor + 1, num_inputs>& u,
                                      const double&) {
         for (int i = 0; i < ineq_c; i++) {
-            in_con(i) = u(i, 0) - 0.5;
+            Eigen::Matrix<double, num_states / 2, 1> q  = x.row(i).head(2);
+            Eigen::Matrix<double, num_states / 2, 1> qd = x.row(i).tail(2);
+            Eigen::Matrix<double, num_inputs, 1> u_i    = u.row(i).transpose();
+            Eigen::Matrix<double, 1, 1> constraint      = u_i.transpose() * qd + rho * qd.transpose() * qd;
+            in_con(i)                                   = constraint(0, 0);
         }
     });
 
+    // Simulate the system
     mpc::cvec<num_states> x, dx;
     x.resize(num_states);
     dx.resize(num_states);
 
-    x(0) = 0.5;
-    x(1) = 0;
+    x(0) = 0.2;
+    x(1) = 0.1;
 
     auto r = optsolver.getLastResult();
 
@@ -98,7 +123,7 @@ int main() {
     // Write the header for the data file
     data_file << "time q1 q2 qd1 qd2 u1 u2\n";
     double time  = 0;
-    double tspan = 50;
+    double tspan = 20;
     while (time < tspan) {
         r        = optsolver.step(x, r.cmd);
         auto seq = optsolver.getOptimalSequence();
@@ -113,6 +138,12 @@ int main() {
 
     // Close the file
     data_file.close();
+
+    // Plot the results using python
+    std::system("python ../src/plot_manipulator_results.py");
+
+    // Animation
+    std::system("python ../src/animate_manipulator_results.py");
 
     return 0;
 }
