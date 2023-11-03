@@ -1,4 +1,4 @@
-# Passivity Based Nonlinear Model Predictive for Robotic Manipulator
+# Passivity Based Nonlinear Model Predictive Control for Robotic Manipulator
 
 This repository contains a C++ implementation of Passivity Based Nonlinear Model Predictive Control (NMPC) designed for controlling a robotic manipulator with two joints. The implementation includes an objective function that minimizes a combination of kinetic energy and error to a desired state, and a passivity constraint to ensure stable control behavior. This is inpired by MATLAB example [3].
 
