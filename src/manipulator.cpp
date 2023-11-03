@@ -70,21 +70,22 @@ int main() {
                                        const Eigen::Matrix<double, pred_hor + 1, num_output>&,
                                        const Eigen::Matrix<double, pred_hor + 1, num_inputs>& u,
                                        double) {
-        double cost_val = 0;
+        double cost = 0;
         for (int i = 0; i < pred_hor + 1; i++) {
             // Extract the states
             Eigen::Matrix<double, num_states / 2, 1> q  = x.row(i).head(2);
             Eigen::Matrix<double, num_states / 2, 1> qd = x.row(i).tail(2);
 
-            // Compute the mass matrix
-            Eigen::Matrix<double, num_states / 2, num_states / 2> M = mass_matrix(model, q);
+            // Compute the kinetic energy
+            double kinetic_energy_i = kinetic_energy(model, q, qd);
 
             // Define error
             Eigen::Matrix<double, num_states / 2, 1> e_q = q - q_d;
-            Eigen::Matrix<double, 1, 1> cost             = 0.5 * (qd.transpose() * M * qd + e_q.transpose() * K * e_q);
-            cost_val += cost(0, 0);
+
+            // Add to the cost
+            cost += 0.5 * (kinetic_energy_i + e_q.transpose() * K * e_q);
         }
-        return cost_val;
+        return cost;
     });
 
     // Define the Passivity constraint

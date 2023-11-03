@@ -16,7 +16,6 @@ axs[0].plot(time, q1, label='q1')
 axs[0].plot(time, q2, label='q2')
 axs[0].set_xlabel('Time [s]')
 axs[0].set_ylabel('Joint Angle [rad]')
-axs[0].set_title('Joint Angles over Time')
 axs[0].legend()
 axs[0].grid(True)
 
@@ -25,7 +24,6 @@ axs[1].plot(time, qd1, label='qd1')
 axs[1].plot(time, qd2, label='qd2')
 axs[1].set_xlabel('Time [s]')
 axs[1].set_ylabel('Joint Velocity [rad/s]')
-axs[1].set_title('Joint Velocities over Time')
 axs[1].legend()
 axs[1].grid(True)
 
@@ -34,7 +32,6 @@ axs[2].plot(time, u1, label='u1')
 axs[2].plot(time, u2, label='u2')
 axs[2].set_xlabel('Time [s]')
 axs[2].set_ylabel('Control Input [Nm]')
-axs[2].set_title('Control Inputs over Time')
 axs[2].legend()
 axs[2].grid(True)
 
@@ -42,12 +39,11 @@ axs[2].grid(True)
 axs[3].plot(time, cost_values, label='Cost Function Value')
 axs[3].set_xlabel('Time [s]')
 axs[3].set_ylabel('Cost')
-axs[3].set_title('Cost Function Value over Time')
 axs[3].legend()
 axs[3].grid(True)
 
 # Adjust layout to prevent overlapping
-plt.tight_layout()
+# plt.tight_layout()
 
 # Show the combined plot
 plt.show()
