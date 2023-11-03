@@ -121,7 +121,7 @@ int main() {
     }
 
     // Write the header for the data file
-    data_file << "time q1 q2 qd1 qd2 u1 u2\n";
+    data_file << "time q1 q2 qd1 qd2 u1 u2 cost\n";
     double time  = 0;
     double tspan = 20;
     while (time < tspan) {
@@ -129,7 +129,7 @@ int main() {
         auto seq = optsolver.getOptimalSequence();
 
         // Save the state and command to the file
-        data_file << time << " " << x.transpose() << " " << r.cmd.transpose() << std::endl;
+        data_file << time << " " << x.transpose() << " " << r.cmd.transpose() << " " << r.cost << std::endl;
 
         stateEq(dx, x, r.cmd);
         x += dx * ts;
