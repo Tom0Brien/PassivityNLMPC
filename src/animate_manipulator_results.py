@@ -21,19 +21,20 @@ robot_id = p.loadURDF("../urdfs/2_link.urdf", useFixedBase=True)
 
 # Loop over your data and set the joint positions
 for i in range(len(data)):
-    # Extract the joint positions from your data
-    joint_positions = data[i, 1:2]  # Assuming the first column is time
-
-    print(joint_positions)
-    # Iterate over each joint and set its position
-    for joint_index in range(len(joint_positions)):
-        # Set the joint position
-        p.setJointMotorControl2(
-            bodyIndex=robot_id,
-            jointIndex=joint_index,
-            controlMode=p.POSITION_CONTROL,
-            targetPosition=joint_positions[joint_index]
-        )
+    # Set the joint position 1
+    p.setJointMotorControl2(
+        bodyIndex=robot_id,
+        jointIndex=0,
+        controlMode=p.POSITION_CONTROL,
+        targetPosition=q1[i]
+    )
+    # Set the joint position 2
+    p.setJointMotorControl2(
+        bodyIndex=robot_id,
+        jointIndex=1,
+        controlMode=p.POSITION_CONTROL,
+        targetPosition=q2[i]
+    )
 
     # Optionally, sleep to control the visualization speed
     time.sleep(0.05)
