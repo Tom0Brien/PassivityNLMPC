@@ -4,7 +4,7 @@ This repository contains a C++ implementation of Passivity Based Nonlinear Model
 
 ## Dependencies
 
-- [tinyrobotics](https://github.com/Tom0Brien/tinyrobotics): A hypothetical library used for handling the robot model, dynamics, and parsing URDF files.
+- [tinyrobotics](https://github.com/Tom0Brien/tinyrobotics): A library used for computing robot dynamics from a URDF file.
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page): A C++ template library for linear algebra.
 - [libmpc++](https://github.com/nicolapiccinelli/libmpc): Model Predictive Control Library.
 
